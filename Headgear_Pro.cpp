@@ -6,11 +6,6 @@ Headgear_Pro示例程序
 
 //1. 关于端口宏的设置
 
-//震动时间参数设置
-#define SHORT_SHAKE_CYCLE 200 //短震动周期ms
-#define SHAKE_TIME 2000 //震动时长
-#define MOTOR_TIME 2000 //转头时长
-
 //电机和震动电机端口
 #define PORT_IN1 2
 #define PORT_IN2 3
