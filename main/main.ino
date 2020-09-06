@@ -12,10 +12,12 @@
 HeadGear headGear(PORT_ENA, PORT_IN1, PORT_IN2, PORT_IN3, PORT_IN4, PORT_RIGHT_SHAKER, PORT_LEFT_SHAKER, APORT_RIGHT_PRESS, APORT_LEFT_PRESS);
 void setup()
 {
-  GpsSerial.begin(9600);
-  avoidSetup();
+  //1. headgear 
   headGear.Setup();
-  Serial3.begin(9600);
+  //2. gps
+  GpsSerial.begin(9600);
+  avoidSetup();//for what
+  Serial3.begin(9600);//serial3 input destination?
   if (Serial3.available())
   {
     while (message == '\0')
@@ -112,7 +114,7 @@ void setup()
     }
   }
 
-  Route::route(destLongitude, destLatitude, destNumber);
+  Route::route(destLongitude, destLatitude, destNumber);//?
   len = Route::routes.size();
   Save_Data.isGetData = false;
   Save_Data.isParseData = false;
@@ -131,10 +133,10 @@ void setup()
 void loop()
 {
   headGear.Update();
-  //   while (thisLongitude == 0 || thisLatitude == 0)
+  //   while (thisLongitude == 0 || thisLatitude == 0)//不用?
   //   {thisLongitude = getLongitude();
   //   thisLatitude = getLatitude();}
-  do
+  do//循环作用?
   {
     thisLongitude = getLongitude();
     thisLatitude = getLatitude();
