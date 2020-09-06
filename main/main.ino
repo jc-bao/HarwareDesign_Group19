@@ -14,9 +14,11 @@ void setup()
 {
   //1. headgear 
   headGear.Setup();
-  //2. gps
+  //2. gps初始化
   GpsSerial.begin(9600);
+  //避障初始化
   avoidSetup();//for what
+  //获取目的地信息
   Serial3.begin(9600);//serial3 input destination?
   if (Serial3.available())
   {
@@ -113,13 +115,14 @@ void setup()
       break; // 默认目的地为二校门
     }
   }
-
+  //初始化对象,设置目的地
   Route::route(destLongitude, destLatitude, destNumber);//?
   len = Route::routes.size();
+  //GPS初始化
   Save_Data.isGetData = false;
   Save_Data.isParseData = false;
   Save_Data.isUsefull = false;
-
+  //检测避障
   MsTimer2::set(1, avoidObstacle);
   MsTimer2::start();
 
@@ -136,6 +139,7 @@ void loop()
   //   while (thisLongitude == 0 || thisLatitude == 0)//不用?
   //   {thisLongitude = getLongitude();
   //   thisLatitude = getLatitude();}
+  //
   do//循环作用?
   {
     thisLongitude = getLongitude();

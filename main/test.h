@@ -1,5 +1,6 @@
 #include "U8glib.h"
 #include <ArduinoBlue.h>//蓝牙依赖
+#include <SoftwareSerial.h>
 
 //蓝牙端口(仅测试用)
 #define BLUETOOTH_TX 10
