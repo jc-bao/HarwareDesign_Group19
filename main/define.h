@@ -8,10 +8,6 @@
 #define PORT_IN4 7
 #define PORT_RIGHT_SHAKER 12
 #define PORT_LEFT_SHAKER 13
-//蓝牙端口(仅测试用)
-#define BLUETOOTH_TX 10
-#define BLUETOOTH_RX 11
-#define BAUD_RATE 9600
 
 //此处为了兼容其他的多串口Arduino板子
 #define GpsSerial  Serial
