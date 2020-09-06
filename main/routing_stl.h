@@ -127,9 +127,11 @@ namespace Map_data {
 #include <algorithm>
 #include <vector>
 #include <queue>
+#include <math.h>
 
 namespace Route {
 
+  const double PI = acos(-1);
 	const int Point_Number = sizeof(Map_data::points) / sizeof(Map_data::Point_coordinate);
 	const int Road_Number = sizeof(Map_data::Roads) / sizeof(Map_data::Road_index);
 
@@ -162,9 +164,9 @@ namespace Route {
 
 	int calc_direction(double x, double y, int b, int c);
 
-}
+  int adjust_direction(double x_now, double y_now, double x_nxt, double y_nxt, double direction_now);
 
-#include <math.h>
+}
 
 bool Route::check(double &a, double b) {
 	if (a < 0 || b < a) return a = b, true;
@@ -305,4 +307,24 @@ void Route::route(double x, double y, int t) {
 	if ((int) routes.size() > 1) directions.push_back(calc_direction(x, y, routes[0], routes[1]));
 	for (int i = 1; i < (int) routes.size() - 1; i++)
 		directions.push_back(calc_direction(routes[i - 1], routes[i], routes[i + 1]));
+}
+
+int Route::adjust_direction(double x_now, double y_now, double x_nxt, double y_nxt, double direction_now) {
+  // return :
+  // 0 : no need to adjust
+  // 1 : turn left
+  // -1 : turn right
+  double vector_x = x_nxt - x_now, vector_y = y_nxt - y_now;
+  double direction_nxt = atan2(vector_x, vector_y);
+  if ((fabs(direction_now - direction_nxt) < PI / 6) ||
+    (fabs(direction_now + 2 * PI - direction_nxt) < PI / 6) ||
+    (fabs(direction_now - 2 * PI - direction_nxt) < PI / 6)
+  ) return 0; // angle < 30 degree : no need to adjust
+  if (direction_now < 0) {
+    if ((direction_now < direction_nxt) && (direction_nxt < direction_now + PI)) return 1; // turn left
+    else return -1; // turn right
+  } else {
+    if ((direction_nxt < direction_now) && (direction_now - PI < direction_nxt) return -1; // turn right
+    else return 1; // turn left
+  }
 }
