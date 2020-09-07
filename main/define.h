@@ -8,6 +8,8 @@
 #define PORT_IN4 7
 #define PORT_RIGHT_SHAKER 12
 #define PORT_LEFT_SHAKER 13
+#define APORT_RIGHT_PRESS 14
+#define APORT_LEFT_PRESS 15
 
 //此处为了兼容其他的多串口Arduino板子
 #define GpsSerial  Serial
