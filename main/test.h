@@ -26,17 +26,17 @@ void draw(float Fr,float Fl,float yaw,float pitch,float roll)
     u8g.setPrintPos(67,15);
     u8g.print(Fl);
     
-    u8g.setPrintPos(0,32);
-    u8g.print("yaw");
-    u8g.setPrintPos(24,32);
-    u8g.print(yaw);
-    u8g.setPrintPos(0,48);
-    u8g.print("pitch");
-    u8g.setPrintPos(42,48);
-    u8g.print(pitch);
-    u8g.setPrintPos(0,64);
-    u8g.print("roll");
-    u8g.setPrintPos(36,64);
-    u8g.print(roll);
+    // u8g.setPrintPos(0,32);
+    // u8g.print("yaw");
+    // u8g.setPrintPos(24,32);
+    // u8g.print(yaw);
+    // u8g.setPrintPos(0,48);
+    // u8g.print("pitch");
+    // u8g.setPrintPos(42,48);
+    // u8g.print(pitch);
+    // u8g.setPrintPos(0,64);
+    // u8g.print("roll");
+    // u8g.setPrintPos(36,64);
+    // u8g.print(roll);
     
 }

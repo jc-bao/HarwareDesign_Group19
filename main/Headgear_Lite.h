@@ -13,25 +13,19 @@
 //#define OUTPUT_READABLE_YAWPITCHROLL //输出欧氏角
 
 #include <Arduino.h>
-//陀螺仪依赖
-#include "I2Cdev.h"
-#include "MPU6050_6Axis_MotionApps20.h"
-#if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
-    #include "Wire.h"
-#endif
 
 
 class HeadGear
 {
 public:
     /*
-     对外接口
+    对外接口
      */
     
     //构造函数
     HeadGear(int inputENA,int inputIN1,int inputIN2,int inputIN3,int inputIN4,int inputRightShaker,int inputLeftShaker,int inputRightPress,int inputLeftPress):
     ENA(inputENA),IN1(inputIN1),IN2(inputIN2),IN3(inputIN3),IN4(inputIN4),RIN(inputRightShaker),LIN(inputLeftShaker),RPR(inputRightPress),LPR(inputLeftPress),
-    dutyCycle(255),motorState(0),shakeStartTime(-3000),shakeMode(0),rightState(0),leftState(0),dmpReady(0),mpu(0x68)
+    dutyCycle(255),motorState(0),shakeStartTime(-3000),shakeMode(0),rightState(0),leftState(0)
     {
     }
     
@@ -48,27 +42,9 @@ public:
     }
     
     //移动类函数
-    void stop()
+    float getDirection()
     {
-        vibrate(1,1,1);
-    }
-    void move()
-    {
-        vibrate(1,1,0);
-    }
-    
-    //信息获取类函数
-    float getYaw()
-    {
-        return (ypr[0] * 180/M_PI);
-    }
-    float getPitch()
-    {
-        return (ypr[1] * 180/M_PI);
-    }
-    float getRoll()
-    {
-        return (ypr[2] * 180/M_PI);
+        return 0.0f;
     }
     float getRightForce()
     {
@@ -111,29 +87,6 @@ public:
         digitalWrite(RIN,LOW);
         digitalWrite(LIN,LOW);
 
-        //初始化MPU
-        // join I2C bus (I2Cdev library doesn't do this automatically)
-        #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
-            Wire.begin();
-            Wire.setClock(400000); // 400kHz I2C clock. Comment this line if having compilation difficulties
-        #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
-            Fastwire::setup(400, true);
-        #endif
-        mpu.initialize();
-        devStatus = mpu.dmpInitialize();
-        //设置陀螺仪
-        mpu.setXGyroOffset(220);
-        mpu.setYGyroOffset(76);
-        mpu.setZGyroOffset(-85);
-        mpu.setZAccelOffset(1788);
-        //校准
-        mpu.CalibrateAccel(6);
-        mpu.CalibrateGyro(6);
-        mpu.PrintActiveOffsets();
-        mpu.setDMPEnabled(true);
-        dmpReady = true;
-        //获取DMP包
-        packetSize = mpu.dmpGetFIFOPacketSize();
     }
     
     //更新函数
@@ -216,13 +169,6 @@ public:
             digitalWrite(PORT_RIGHT_SHAKER,LOW);
             digitalWrite(PORT_LEFT_SHAKER,LOW);
         }
-        
-        //更新角度
-        mpu.dmpGetCurrentFIFOPacket(fifoBuffer);
-        mpu.dmpGetQuaternion(&q, fifoBuffer);
-        mpu.dmpGetGravity(&gravity, &q);
-        mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
-        
     }
     
     //电机控制类
@@ -242,22 +188,6 @@ public:
 protected:
     
 private:
-    //下面是关于MPU6050的使用,我看不懂
-    MPU6050 mpu;//mpu对象,陀螺仪与加速度计
-    // MPU control/status vars
-    bool dmpReady;  // set true if DMP init was successful
-    uint8_t mpuIntStatus;   // holds actual interrupt status byte from MPU
-    uint8_t devStatus;      // return status after each device operation (0 = success, !0 = error)
-    uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
-    uint16_t fifoCount;     // count of all bytes currently in FIFO
-    uint8_t fifoBuffer[64]; // FIFO storage buffer
-
-    // orientation/motion vars
-    Quaternion q;           // [w, x, y, z]         quaternion container
-    VectorFloat gravity;    // [x, y, z]            gravity vector
-    float ypr[3];           // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
-    
-    
     int ENA,IN1,IN2,IN3,IN4;//电机控制
     int RIN,LIN;//震动马达
     int RPR,LPR;//压力传感器
