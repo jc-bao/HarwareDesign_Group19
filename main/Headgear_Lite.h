@@ -42,10 +42,16 @@ public:
     }
     
     //移动类函数
-    float getDirection()
+    void stop()
     {
-        return 0.0f;
+        vibrate(1,1,1);
     }
+    void move()
+    {
+        vibrate(1,1,0);
+    }
+    
+    //信息获取类函数
     float getRightForce()
     {
         float Fr=map(analogRead(RPR), 0, 676, PRESS_MIN, PRESS_MAX);
@@ -169,6 +175,7 @@ public:
             digitalWrite(PORT_RIGHT_SHAKER,LOW);
             digitalWrite(PORT_LEFT_SHAKER,LOW);
         }
+        
     }
     
     //电机控制类
