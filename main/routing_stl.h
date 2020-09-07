@@ -127,9 +127,11 @@ namespace Map_data {
 #include <algorithm>
 #include <vector>
 #include <queue>
+#include <math.h>
 
 namespace Route {
 
+  const double PI = acos(-1);
 	const int Point_Number = sizeof(Map_data::points) / sizeof(Map_data::Point_coordinate);
 	const int Road_Number = sizeof(Map_data::Roads) / sizeof(Map_data::Road_index);
 
@@ -148,6 +150,8 @@ namespace Route {
 
 	double calculate_dist(double x, double y, int p);
 
+  double calculate_dist(double x1, double y1, double x2, double y2);
+
 	void route_by_id(int s, int t);
 
 	bool connected(int u, int v);
@@ -162,9 +166,11 @@ namespace Route {
 
 	int calc_direction(double x, double y, int b, int c);
 
-}
+  int adjust_direction(double x_now, double y_now, double x_nxt, double y_nxt, double direction_now);
 
-#include <math.h>
+  double calculate_distance_from_road(double x1, double y1, double x2, double y2, double x_now, double y_now);
+
+}
 
 bool Route::check(double &a, double b) {
 	if (a < 0 || b < a) return a = b, true;
@@ -188,6 +194,14 @@ double Route::calculate_dist(double x, double y, int t) {
 	double dx = 85.1752429951, dy = 111.1949266445;
 	double disx = (x - Map_data::points[t].x) * dx;
 	double disy = (y - Map_data::points[t].y) * dy;
+	return sqrt( sqr(disx) + sqr(disy) );
+}
+
+double Route::calculate_dist(double x1, double y1, double x2, double y2) {
+	// reference coordinate 116.326836,40.00366
+	double dx = 85.1752429951, dy = 111.1949266445;
+	double disx = (x2 - x1) * dx;
+	double disy = (y2 - y1) * dy;
 	return sqrt( sqr(disx) + sqr(disy) );
 }
 
@@ -305,4 +319,37 @@ void Route::route(double x, double y, int t) {
 	if ((int) routes.size() > 1) directions.push_back(calc_direction(x, y, routes[0], routes[1]));
 	for (int i = 1; i < (int) routes.size() - 1; i++)
 		directions.push_back(calc_direction(routes[i - 1], routes[i], routes[i + 1]));
+}
+
+int Route::adjust_direction(double x_now, double y_now, double x_nxt, double y_nxt, double direction_now) {
+  // return :
+  // 0 : no need to adjust
+  // 1 : turn left
+  // -1 : turn right
+  double vector_x = x_nxt - x_now, vector_y = y_nxt - y_now;
+  double direction_nxt = atan2(vector_x, vector_y);
+  if ((fabs(direction_now - direction_nxt) < PI / 6) ||
+    (fabs(direction_now + 2 * PI - direction_nxt) < PI / 6) ||
+    (fabs(direction_now - 2 * PI - direction_nxt) < PI / 6)
+  ) return 0; // angle < 30 degree : no need to adjust
+  if (direction_now < 0) {
+    if ((direction_now < direction_nxt) && (direction_nxt < direction_now + PI)) return 1; // turn left
+    else return -1; // turn right
+  } else {
+    if ((direction_nxt < direction_now) && (direction_now - PI < direction_nxt) return -1; // turn right
+    else return 1; // turn left
+  }
+}
+
+double Route::calculate_distance_from_road(double x1, double y1, double x2, double y2, double x_now, double y_now) {
+  // unit: km
+  // line : (x1, y1) -- (x2, y2)
+  // this function calculate the distance from point (x_now, y_now) to line (x1, y1)-(x2, y2)
+  double a = calculate_dist(x1, y1, x2, y2);
+  double b = calculate_dist(x1, y1, x_now, y_now);
+  double c = calculate_dist(x2, y2, x_now, y_now);
+  double p = (a + b + c) / 2;
+  double area = sqrt(p * (p - a) * (p - b) * (p - c));
+  double h = 2 * area / a;
+  return h;
 }
